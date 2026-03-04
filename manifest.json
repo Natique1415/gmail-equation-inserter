@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Gmail Equation Inserter",
   "version": "2.0.0",
-  "description": "Insert LaTeX equations directly into Gmail compose windows.#1",
+  "description": "Insert LaTeX equations directly into Gmail compose windows.",
   "permissions": [
     "activeTab"
   ],
@@ -10,6 +10,15 @@
     "https://mail.google.com/*",
     "https://latex.codecogs.com/*"
   ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "Gmail Equation Inserter"
+  },
   "content_scripts": [
     {
       "matches": [

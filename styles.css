@@ -733,3 +733,14 @@
   color: #b06000;
   border: 1px solid #fde68a;
 }
+
+/* ── Insert spinner ──────────────────────────────────────── */
+@keyframes geq-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
