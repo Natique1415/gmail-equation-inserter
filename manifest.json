@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "Gmail Equation Inserter",
-  "version": "1.0.0",
-  "description": "Insert beautiful LaTeX equations directly into Gmail compose windows. C#5",
+  "version": "2.0.0",
+  "description": "Insert LaTeX equations directly into Gmail compose windows.#1",
   "permissions": [
     "activeTab"
   ],
@@ -16,6 +16,10 @@
         "https://mail.google.com/*"
       ],
       "js": [
+        "data.js",
+        "validator.js",
+        "inserter.js",
+        "modal.js",
         "content.js"
       ],
       "css": [
