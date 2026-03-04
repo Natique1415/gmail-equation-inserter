@@ -496,6 +496,7 @@
   font-size: 13px;
   color: #202124;
   resize: both;
+  max-width: 100%;
   min-height: 80px;
   max-height: 260px;
   outline: none;
