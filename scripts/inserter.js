@@ -73,39 +73,64 @@
     const HISTORY_KEY = "geq_history";
     const HISTORY_MAX = 10;
 
+    // Returns false if the extension context has been invalidated (e.g. after
+    // a reload in dev mode) or if the storage permission is missing.
+    // Calling any chrome API after context invalidation throws synchronously,
+    // so we must guard every entry point.
+    function storageAvailable() {
+        try {
+            return (
+                typeof chrome !== "undefined" &&
+                !!chrome.storage &&
+                !!chrome.runtime.id  // becomes undefined when context is invalidated
+            );
+        } catch (_) {
+            return false;
+        }
+    }
+
     GEQ.saveToHistory = function (latex) {
         if (!latex || !latex.trim()) return;
-        if (typeof chrome === "undefined" || !chrome.storage) {
-            console.warn("[GEQ] chrome.storage unavailable — add \"storage\" permission to manifest.json");
+        if (!storageAvailable()) {
+            console.warn("[GEQ] chrome.storage unavailable — add \"storage\" permission to manifest.json, or reload the Gmail tab after updating the extension.");
             return;
         }
-        chrome.storage.local.get({ [HISTORY_KEY]: [] }, (data) => {
-            if (chrome.runtime.lastError) {
-                console.warn("[GEQ] saveToHistory error:", chrome.runtime.lastError.message);
-                return;
-            }
-            const history = data[HISTORY_KEY].filter((item) => item !== latex);
-            history.unshift(latex);
-            chrome.storage.local.set({ [HISTORY_KEY]: history.slice(0, HISTORY_MAX) });
-        });
+        try {
+            chrome.storage.local.get({ [HISTORY_KEY]: [] }, (data) => {
+                if (chrome.runtime.lastError) {
+                    console.warn("[GEQ] saveToHistory error:", chrome.runtime.lastError.message);
+                    return;
+                }
+                const history = data[HISTORY_KEY].filter((item) => item !== latex);
+                history.unshift(latex);
+                chrome.storage.local.set({ [HISTORY_KEY]: history.slice(0, HISTORY_MAX) });
+            });
+        } catch (err) {
+            console.warn("[GEQ] saveToHistory threw — extension context likely invalidated. Reload the Gmail tab.", err.message);
+        }
     };
 
     // callback receives ({ ok: bool, history: string[] })
-    // ok=false means chrome.storage is unavailable (missing permission)
+    // ok=false means storage is unavailable (missing permission or invalidated context)
     GEQ.loadHistory = function (callback) {
-        if (typeof chrome === "undefined" || !chrome.storage) {
-            console.warn("[GEQ] chrome.storage unavailable — add \"storage\" permission to manifest.json");
+        if (!storageAvailable()) {
+            console.warn("[GEQ] chrome.storage unavailable — add \"storage\" permission to manifest.json, or reload the Gmail tab after updating the extension.");
             callback({ ok: false, history: [] });
             return;
         }
-        chrome.storage.local.get({ [HISTORY_KEY]: [] }, (data) => {
-            if (chrome.runtime.lastError) {
-                console.warn("[GEQ] loadHistory error:", chrome.runtime.lastError.message);
-                callback({ ok: false, history: [] });
-                return;
-            }
-            callback({ ok: true, history: data[HISTORY_KEY] || [] });
-        });
+        try {
+            chrome.storage.local.get({ [HISTORY_KEY]: [] }, (data) => {
+                if (chrome.runtime.lastError) {
+                    console.warn("[GEQ] loadHistory error:", chrome.runtime.lastError.message);
+                    callback({ ok: false, history: [] });
+                    return;
+                }
+                callback({ ok: true, history: data[HISTORY_KEY] || [] });
+            });
+        } catch (err) {
+            console.warn("[GEQ] loadHistory threw — extension context likely invalidated. Reload the Gmail tab.", err.message);
+            callback({ ok: false, history: [] });
+        }
     };
 
     /* ------------------------------------------------------------

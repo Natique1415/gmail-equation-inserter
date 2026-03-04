@@ -495,9 +495,9 @@
   font-family: 'Fira Mono', 'Roboto Mono', 'Courier New', monospace;
   font-size: 13px;
   color: #202124;
-  resize: vertical;
+  resize: both;
   min-height: 80px;
-  max-height: 160px;
+  max-height: 260px;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
