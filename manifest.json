@@ -4,7 +4,8 @@
   "version": "2.0.0",
   "description": "Insert LaTeX equations directly into Gmail compose windows.",
   "permissions": [
-    "activeTab"
+    "activeTab",
+    "storage"
   ],
   "host_permissions": [
     "https://mail.google.com/*",
