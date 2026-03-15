@@ -54,10 +54,13 @@
     return findByProximity();
   }
 
-  // Keep only elements that live inside a recognisable compose container.
+  // Keep only elements that live inside a genuine compose window.
+  // .nH is Gmail's full-page shell — too broad, causes button to appear
+  // in the inbox toolbar and email hover actions. Only use compose-specific
+  // containers: [role="dialog"] (popup compose), .T-I-KE, .AD (full-screen).
   function filterToComposeContext(nodeList) {
     return Array.from(nodeList).filter(
-      (el) => !!el.closest('[role="dialog"], .T-I-KE, .AD, .nH')
+      (el) => !!el.closest('[role="dialog"], .T-I-KE, .AD')
     );
   }
 
@@ -65,7 +68,7 @@
     const results = [];
     document.querySelectorAll('[contenteditable="true"]').forEach((editor) => {
       // Walk up to the closest compose wrapper
-      const wrapper = editor.closest('[role="dialog"], .T-I-KE, .AD, .nH');
+      const wrapper = editor.closest('[role="dialog"], .T-I-KE, .AD');
       if (!wrapper) return;
 
       // A toolbar has several direct actionable children
